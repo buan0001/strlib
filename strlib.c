@@ -1,19 +1,43 @@
 #include <stdio.h>
+#include "strlib.h"
 
-int main()
+char str_at(int index, char *charAdr)
 {
-    
-    return 0;
+    int moves = 0;
+    while (*charAdr != '\0' && index != moves)
+    {
+        moves++;
+        charAdr++;
+    }
+    if (index == moves)
+    {
+        return *charAdr;
+    }
+    else
+    {
+        return '\0';
+    }
 }
 
-char at(int index){
-    return 'c';
+int endsWith(char last_c, char *charAdr)
+{
+    // Keep going until '\0' is met.
+    while (*(++charAdr))
+        ;
+    // At this point *charAdr will be the null character. So go one back and compare it to the desired check char
+    return last_c == *(--charAdr);
 }
 
-/* 
-at()
-charAt()
-endsWith()
+int includes(char *org_str, char* comp_str)
+{
+    char* temp_ptr = comp_str;
+    // Keep going until '\0' is met.
+    while (*(++org_str));
+}
+
+/*
+
+
 includes()
 indexOf()
 lastIndexOf()
