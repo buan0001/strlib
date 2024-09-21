@@ -15,6 +15,9 @@ int str_length(char* str)
 /* Returns the character (exactly one UTF-16 code unit) at the specified index. Accepts negative integers, which count back from the last string character.*/
 char str_at(char *charAdr, int index)
 {
+    if (index < 0){
+        index += str_length(charAdr);
+    }
     int moves = 0;
     while (*charAdr != '\0' && index != moves)
     {
@@ -27,13 +30,31 @@ char str_at(char *charAdr, int index)
     }
     else
     {
-        return '\0';
+        return 0;
     }
 }
 
 /* Determines whether a string ends with the characters of the string searchString. */
 int str_endsWith(char *charAdr, char* end_chars)
 {
+    int length_org = str_length(charAdr);
+    int length_check = str_length(end_chars);
+    int length_dif = length_org - length_check;
+
+    if (length_dif < 0) return 0;
+
+    // Move the string pointer
+    charAdr += length_dif;
+    for (int i = 0; i < length_check; i++)
+    {
+        if (*charAdr++ != *end_chars++)
+        {
+            return 0;
+        }
+    }
+    return 1;
+    
+
     // // Keep going until '\0' is met.
     // while (*(++charAdr))
     //     ;
@@ -42,7 +63,7 @@ int str_endsWith(char *charAdr, char* end_chars)
 }
 
 // Determines whether the calling string begins with the characters of string searchString
-int str_startsWith(char *charAdr, char last_c)
+int str_startsWith(char *charAdr, char* last_c)
 {
 }
 
@@ -61,7 +82,7 @@ int str_indexOf(char *searchStr, char *searchVal)
 }
 
 /* Returns the index within this string of the last occurrence of searchValue, or -1 if not found. */
-int str_lastIndexOf(char *searchStr, char *searchVa)
+int str_lastIndexOf(char *searchStr, char *searchVal)
 {
 }
 
@@ -116,13 +137,14 @@ void str_toLowerCase(char *str)
 
 
     /*
-    No idea how to handle locales
+    No idea how to handle locales:
+
     localeCompare()
     toLocaleLowerCase() <- wtf?
     toLocaleUpperCase() <- wtf?
     */
 
-    /* REGEX METHODS:
+    /* REGEX METHODS - maybe do them with just strings
     match()
     mastchAll()
     replace()
