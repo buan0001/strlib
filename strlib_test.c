@@ -52,6 +52,19 @@ void run_tests()
     wrongs_corrects[run_endsWith_like_test("abu", "nanubabu", 5, str_lastIndexOf)]++;
     wrongs_corrects[run_endsWith_like_test("u", "nanubabu", 7, str_lastIndexOf)]++;
 
+    wrongs_corrects[run_pad_like_test("nanubabu", "la", 10, "nanubabul", str_padEnd)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", "la", 11, "nanubabula", str_padEnd)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", ".", 11, "nanubabu..", str_padEnd)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", " ", 11, "nanubabu  ", str_padEnd)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", ".", 4, "nanubabu", str_padEnd)]++;
+
+
+    wrongs_corrects[run_pad_like_test("nanubabu", "la", 10, "lnanubabu", str_padStart)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", "la", 10, "lananubabu", str_padStart)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", ".", 10, "..nanubabu", str_padStart)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", " ", 10, "  nanubabu", str_padStart)]++;
+    wrongs_corrects[run_pad_like_test("nanubabu", ".", 4, "nanubabu", str_padStart)]++;
+
     printf("\nRan %d tests:\n", (wrongs_corrects[0] + wrongs_corrects[1]));
     printf("Passed: %d\n", wrongs_corrects[1]);
     printf("Failed: %d\n", wrongs_corrects[0]);
@@ -64,12 +77,19 @@ int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *
 
 int run_endsWith_like_test(char *comp_str, char *org_str, int expected, int (*str_f)(char *, char *))
 {
-    return handle_result_condition((*str_f)(org_str, comp_str), org_str, expected, comp_str);
+    return handle_result_conditional((*str_f)(org_str, comp_str), org_str, expected, comp_str);
 }
 
 int run_length_like_test(char *string, int expected, int (*str_f)(char *))
 {
     return handle_result_unconditional((*str_f)(string), string, expected);
+}
+
+int run_pad_like_test(char *string, char *pad_str, int desired_length, char *expected, void (*str_f)(char *, char *, int, char *))
+{
+    char padded_array[500];
+    (*str_f)(string, pad_str, desired_length, padded_array);
+    return handle_string_comparison_test(string, padded_array, expected);
 }
 
 int handle_result_unconditional(int result, char *string, int expected)
@@ -82,11 +102,20 @@ int handle_result_unconditional(int result, char *string, int expected)
     return 1;
 }
 
-int handle_result_condition(int result, char *string, int expected, char *critera)
+int handle_result_conditional(int result, char *string, int expected, char *critera)
 {
     if (result != expected)
     {
         printf("Test FAILED for %s. Testing for: %s. Expected: %d. Actual: %d. \n", string, critera, expected, result);
+        return 0;
+    }
+    return 1;
+}
+
+int handle_string_comparison_test( char* original, char* actual, char* expected)
+{
+    if (!str_match(actual, expected)){
+        printf("Test FAILED for %s. Expected: %s. Actual: %s\n", original, expected, actual);
         return 0;
     }
     return 1;

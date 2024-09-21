@@ -12,6 +12,27 @@ int str_length(char *str)
     return length;
 }
 
+// Copies the contents of one array into another. USE WITH CAUTION. Has no guard against overflow
+void copy_arr(char *org_arr, char *buffer)
+{
+    while (*buffer++ = *org_arr++)
+        ;
+}
+
+// Checks if two strings are equal
+int str_match(char *org_str, char *searchString)
+{
+    // Keep going until '\0' is met.
+    do
+    {
+        if (*org_str++ != *searchString++)
+        {
+            return 0;
+        }
+    } while (*searchString);
+    return 1;
+}
+
 /* Returns the character (exactly one UTF-16 code unit) at the specified index. Accepts negative integers, which count back from the last string character.*/
 char str_at(char *charAdr, int index)
 {
@@ -72,26 +93,11 @@ int str_includes(char *org_str, char *searchString)
     return 0;
 }
 
-// Checks if two strings are equal
-int str_match(char *org_str, char *searchString)
-{
-    // char *temp_ptr = searchString;
-    // Keep going until '\0' is met.
-    do
-    {
-        if (*org_str++ != *searchString++)
-        {
-            return 0;
-        }
-    } while (*searchString);
-    return 1;
-}
-
 /*Returns the index within this string of the first occurrence of searchValue, or -1 if not found.*/
 int str_indexOf(char *strToSearch, char *searchVal)
 {
     int length_search = str_length(searchVal);
-    if ( length_search == 0 )
+    if (length_search == 0)
     {
         return -1;
     }
@@ -109,7 +115,7 @@ int str_indexOf(char *strToSearch, char *searchVal)
             {
                 break;
             }
-           matches++;
+            matches++;
         }
         if (matches == length_search)
         {
@@ -165,11 +171,68 @@ int str_lastIndexOf(char *strToSearch, char *searchVal)
 // Pads the current string from the end with a given string and returns a new string of the length targetLength.
 void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
 {
-    
+    int string_length = str_length(org_str);
+    // Make a copy of the start adress for the pad str so we can use it multiple times
+    char *pad_pointer_copy = pad_str;
+
+    copy_arr(org_str, buffer);
+    // Start the pointer at the end of the pre-existing string
+    buffer += string_length;
+    while (string_length++ < final_len)
+    {
+        // Reset the pointer of pad_str every time it reaches the end
+        if (!*pad_pointer_copy)
+        {
+            pad_pointer_copy = pad_str;
+        }
+        *buffer++ = *pad_pointer_copy++;
+    }
+    // Add a terminating 0
+    *buffer = 0;
 }
+
 // Pads the current string from the end with a given string and returns a new string of the length targetLength
 void str_padStart(char *org_str, char *pad_str, int final_len, char *buffer)
 {
+    int string_length = str_length(org_str);
+    int additional_spots_needed = final_len - string_length;
+
+    if (additional_spots_needed < 0)
+    {
+        copy_arr(org_str, buffer);
+    }
+    else
+    {
+        // printf("additional_spots_needed in pad START: %d\n", additional_spots_needed);
+        // Make a copy of the start adress for the pad str so we can use it multiple times
+        char *pad_pointer_copy = pad_str;
+        // Dont fill the buffer from the start - we want to leave room for the padding in the begginning
+        copy_arr(org_str, buffer + additional_spots_needed);
+
+        // for (int i = 0; i < additional_spots_needed; i++)
+        // {
+        //     // Reset the pointer of pad_str every time it reaches the end
+        //     if (!*pad_pointer_copy)
+        //     {
+        //         pad_pointer_copy = pad_str;
+        //     }
+        //     buffer[i] = *pad_pointer_copy++;
+        // }
+        // // Ensure the null terminator is correctly placed at the end of the final string
+        // buffer[final_len] = '\0';
+
+        while (string_length++ < final_len)
+        {
+            // Reset the pointer of pad_str every time it reaches the end
+            if (!*pad_pointer_copy)
+            {
+                pad_pointer_copy = pad_str;
+            }
+            *buffer++ = *pad_pointer_copy++;
+        }
+        // Add a terminating 0 at the end of the string full length
+        *(buffer + final_len) = 0;
+    }
 }
 
 // Returns a string consisting of the elements of the object repeated count times.
