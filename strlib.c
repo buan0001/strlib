@@ -45,41 +45,23 @@ int str_endsWith(char *charAdr, char *end_chars)
     if (length_dif < 0)
         return 0;
 
-    // Move the string pointer
+    // Move the string pointer to match the end string
     charAdr += length_dif;
-    // And check if the last characters match the other string's
+
     return str_match(charAdr, end_chars);
-    // for (int i = 0; i < length_check; i++)
-    // {
-    //     if (*charAdr++ != *end_chars++)
-    //     {
-    //         return 0;
-    //     }
-    // }
-    // return 1;
 }
 
 // Determines whether the calling string begins with the characters of string searchString
 int str_startsWith(char *charAdr, char *start_str)
 {
     return str_match(charAdr, start_str);
-    // As long as the start string has a value, keep going - but do it once no matter what to check for empty string
-    // do
-    // {
-    //     if (*start_str++ != *charAdr++)
-    //     {
-    //         return 0;
-    //     }
-    // } while (*start_str);
-    // // If there wasn't a mismatch between the strings in the loop, charAdr indeed starts with start_str
-    // return 1;
 }
 
 /* Determines whether the calling string contains searchString. */
 int str_includes(char *org_str, char *searchString)
 {
     // We need to check for every character in the org_str if it and the following charcters match the search string
-    // If we find a match, we stop. Otherwise we increment the org_str and continue until 0 is met 
+    // If we find a match, we stop. Otherwise we increment the org_str and continue until 0 is met
     do
     {
         if (str_match(org_str++, searchString))
@@ -106,8 +88,41 @@ int str_match(char *org_str, char *searchString)
 }
 
 /*Returns the index within this string of the first occurrence of searchValue, or -1 if not found.*/
-int str_indexOf(char *searchStr, char *searchVal)
+int str_indexOf(char *strToSearch, char *searchVal)
 {
+    int length_search = str_length(searchVal);
+    if ( length_search == 0 )
+    {
+        return -1;
+    }
+
+    int index = 0;
+    char *copy = strToSearch;
+    do
+    {
+        // Much like str_includes we must check with every character of strToSearch being the first one
+        // And iterate for the full search value
+        int matches = 0;
+        for (int i = 0; i < length_search; i++)
+        {
+            if (strToSearch[index + i] != searchVal[i])
+            {
+                break;
+            }
+           matches++;
+        }
+        if (matches == length_search)
+        {
+            return index;
+        }
+        else
+        {
+            index++;
+        }
+        // Continue as long as there is a value on the index
+        // AND as long as there's enough room to fit the search string in the original value
+    } while (strToSearch[index + length_search - 1]);
+    return -1;
 }
 
 /* Returns the index within this string of the last occurrence of searchValue, or -1 if not found. */

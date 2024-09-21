@@ -36,7 +36,13 @@ void run_tests()
     wrongs_corrects[run_endsWith_like_test("", "nanubabu", 0, str_includes)]++;
     wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 1, str_includes)]++;
 
-    wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 1, str_includes)]++;
+    wrongs_corrects[run_endsWith_like_test("anu", "nanubabu", 1, str_indexOf)]++;
+    wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 0, str_indexOf)]++;
+    wrongs_corrects[run_endsWith_like_test("n", "nanubabu", 0, str_indexOf)]++;
+    wrongs_corrects[run_endsWith_like_test("", "nanubabu", -1, str_indexOf)]++;
+    wrongs_corrects[run_endsWith_like_test("nanubabububu", "nanubabu", -1, str_indexOf)]++;
+    wrongs_corrects[run_endsWith_like_test("abu", "nanubabu", 5, str_indexOf)]++;
+    wrongs_corrects[run_endsWith_like_test("bu", "nanubabu", 6, str_indexOf)]++;
 
     printf("\nRan %d tests:\n", (wrongs_corrects[0] + wrongs_corrects[1]));
     printf("Passed: %d\n", wrongs_corrects[1]);
