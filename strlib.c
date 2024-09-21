@@ -11,7 +11,6 @@ int str_length(char* str)
     return length;
 }
 
-// TODO: Accept negative values in order to take the the index from the end/right
 /* Returns the character (exactly one UTF-16 code unit) at the specified index. Accepts negative integers, which count back from the last string character.*/
 char str_at(char *charAdr, int index)
 {
@@ -45,6 +44,7 @@ int str_endsWith(char *charAdr, char* end_chars)
 
     // Move the string pointer
     charAdr += length_dif;
+    // And check if the last characters match the other string's
     for (int i = 0; i < length_check; i++)
     {
         if (*charAdr++ != *end_chars++)
@@ -53,18 +53,19 @@ int str_endsWith(char *charAdr, char* end_chars)
         }
     }
     return 1;
-    
-
-    // // Keep going until '\0' is met.
-    // while (*(++charAdr))
-    //     ;
-    // // At this point *charAdr will be the null character. So go one back and compare it to the desired check char
-    // return last_c == *(--charAdr);
 }
 
 // Determines whether the calling string begins with the characters of string searchString
-int str_startsWith(char *charAdr, char* last_c)
+int str_startsWith(char *charAdr, char* start_str)
 {
+    // As long as the start string has a value, keep going
+    while ( *start_str ){
+        if (*start_str++ != *charAdr++){
+            return 0;
+        }
+    }
+    // If there wasn't a mismatch between the strings in the loop, charAdr indeed starts with start_str
+    return 1;
 }
 
 /* Determines whether the calling string contains searchString. */

@@ -20,12 +20,12 @@ void str_trimStart(char *ws_str);
 void str_toUpperCase(char *str);
 void str_toLowerCase(char *str);
 
-
-    // Tests and other
-    void run_tests();
+// Tests and other
+void run_tests();
 
 int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *, int));
 int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *));
 int run_length_like_test(char *string, int expected, int (*str_f)(char *));
+int handle_result(int result, char *string, int expected);
 
 #endif

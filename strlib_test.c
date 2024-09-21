@@ -25,6 +25,8 @@ void run_tests()
     wrongs_corrects[run_endsWith_like_test("babu", "nanubabu", 1, str_endsWith)]++;
     wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_endsWith)]++;
 
+    // TODO: str_startsWith() test
+
     printf("\nRan %d tests:\n", (wrongs_corrects[0] + wrongs_corrects[1]));
     printf("Passed: %d\n", wrongs_corrects[1]);
     printf("Failed: %d\n", wrongs_corrects[0]);
@@ -32,32 +34,24 @@ void run_tests()
 
 int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *, int))
 {
-    int result = (*str_f)(string, index);
-    if (result != expected)
-    {
-        printf("Test FAILED for %s. Expected: %d. Actual: %d. \n", string, expected, result);
-        return 0;
-    }
-    return 1;
+    return handle_result((*str_f)(string, index), string, expected);
 }
 
-int run_endsWith_like_test(char* ending_str, char *string, int expected, int (*str_f)( char *, char*))
+int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *))
 {
-    int result = (*str_f)(string, ending_str);
-    if (result != expected)
-    {
-        printf("Test FAILED for %s ends with %c. Expected: %d. Actual: %d. \n", string, ending_str, expected, result);
-        return 0;
-    }
-    return 1;
+    return handle_result((*str_f)(string, ending_str), string, expected);
 }
 
 int run_length_like_test(char *string, int expected, int (*str_f)(char *))
 {
-    int result = (*str_f)(string);
+    return handle_result((*str_f)(string), string, expected);
+}
+
+int handle_result(int result, char *string, int expected)
+{
     if (result != expected)
     {
-        printf("Test FAILED for %s. Expected: %d. Actual: %d. \n", string,  expected, result);
+        printf("Test FAILED for %s. Expected: %d. Actual: %d. \n", string, expected, result);
         return 0;
     }
     return 1;
