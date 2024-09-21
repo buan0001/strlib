@@ -25,7 +25,18 @@ void run_tests()
     wrongs_corrects[run_endsWith_like_test("babu", "nanubabu", 1, str_endsWith)]++;
     wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_endsWith)]++;
 
-    // TODO: str_startsWith() test
+    wrongs_corrects[run_endsWith_like_test("na", "nanubabu", 1, str_startsWith)]++;
+    wrongs_corrects[run_endsWith_like_test("n", "nanubabu", 1, str_startsWith)]++;
+    wrongs_corrects[run_endsWith_like_test("", "nanubabu", 0, str_startsWith)]++;
+    wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_startsWith)]++;
+
+    wrongs_corrects[run_endsWith_like_test("ba", "nanubabu", 1, str_includes)]++;
+    wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_includes)]++;
+    wrongs_corrects[run_endsWith_like_test("n", "nanubabu", 1, str_includes)]++;
+    wrongs_corrects[run_endsWith_like_test("", "nanubabu", 0, str_includes)]++;
+    wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 1, str_includes)]++;
+
+    wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 1, str_includes)]++;
 
     printf("\nRan %d tests:\n", (wrongs_corrects[0] + wrongs_corrects[1]));
     printf("Passed: %d\n", wrongs_corrects[1]);
@@ -34,24 +45,34 @@ void run_tests()
 
 int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *, int))
 {
-    return handle_result((*str_f)(string, index), string, expected);
+    return handle_result_unconditional((*str_f)(string, index), string, expected);
 }
 
-int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *))
+int run_endsWith_like_test(char *comp_str, char *org_str, int expected, int (*str_f)(char *, char *))
 {
-    return handle_result((*str_f)(string, ending_str), string, expected);
+    return handle_result_condition((*str_f)(org_str, comp_str), org_str, expected, comp_str);
 }
 
 int run_length_like_test(char *string, int expected, int (*str_f)(char *))
 {
-    return handle_result((*str_f)(string), string, expected);
+    return handle_result_unconditional((*str_f)(string), string, expected);
 }
 
-int handle_result(int result, char *string, int expected)
+int handle_result_unconditional(int result, char *string, int expected)
 {
     if (result != expected)
     {
         printf("Test FAILED for %s. Expected: %d. Actual: %d. \n", string, expected, result);
+        return 0;
+    }
+    return 1;
+}
+
+int handle_result_condition(int result, char *string, int expected, char *critera)
+{
+    if (result != expected)
+    {
+        printf("Test FAILED for %s. Testing for: %s. Expected: %d. Actual: %d. \n", string, critera, expected, result);
         return 0;
     }
     return 1;

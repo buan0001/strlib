@@ -2,10 +2,11 @@
 #include "strlib.h"
 
 // Returns the length of the given string
-int str_length(char* str)
+int str_length(char *str)
 {
     int length = 0;
-    while(*str++){
+    while (*str++)
+    {
         length++;
     }
     return length;
@@ -14,7 +15,8 @@ int str_length(char* str)
 /* Returns the character (exactly one UTF-16 code unit) at the specified index. Accepts negative integers, which count back from the last string character.*/
 char str_at(char *charAdr, int index)
 {
-    if (index < 0){
+    if (index < 0)
+    {
         index += str_length(charAdr);
     }
     int moves = 0;
@@ -34,47 +36,73 @@ char str_at(char *charAdr, int index)
 }
 
 /* Determines whether a string ends with the characters of the string searchString. */
-int str_endsWith(char *charAdr, char* end_chars)
+int str_endsWith(char *charAdr, char *end_chars)
 {
     int length_org = str_length(charAdr);
     int length_check = str_length(end_chars);
     int length_dif = length_org - length_check;
 
-    if (length_dif < 0) return 0;
+    if (length_dif < 0)
+        return 0;
 
     // Move the string pointer
     charAdr += length_dif;
     // And check if the last characters match the other string's
-    for (int i = 0; i < length_check; i++)
-    {
-        if (*charAdr++ != *end_chars++)
-        {
-            return 0;
-        }
-    }
-    return 1;
+    return str_match(charAdr, end_chars);
+    // for (int i = 0; i < length_check; i++)
+    // {
+    //     if (*charAdr++ != *end_chars++)
+    //     {
+    //         return 0;
+    //     }
+    // }
+    // return 1;
 }
 
 // Determines whether the calling string begins with the characters of string searchString
-int str_startsWith(char *charAdr, char* start_str)
+int str_startsWith(char *charAdr, char *start_str)
 {
-    // As long as the start string has a value, keep going
-    while ( *start_str ){
-        if (*start_str++ != *charAdr++){
-            return 0;
-        }
-    }
-    // If there wasn't a mismatch between the strings in the loop, charAdr indeed starts with start_str
-    return 1;
+    return str_match(charAdr, start_str);
+    // As long as the start string has a value, keep going - but do it once no matter what to check for empty string
+    // do
+    // {
+    //     if (*start_str++ != *charAdr++)
+    //     {
+    //         return 0;
+    //     }
+    // } while (*start_str);
+    // // If there wasn't a mismatch between the strings in the loop, charAdr indeed starts with start_str
+    // return 1;
 }
 
 /* Determines whether the calling string contains searchString. */
 int str_includes(char *org_str, char *searchString)
 {
-    char *temp_ptr = searchString;
+    // We need to check for every character in the org_str if it and the following charcters match the search string
+    // If we find a match, we stop. Otherwise we increment the org_str and continue until 0 is met 
+    do
+    {
+        if (str_match(org_str++, searchString))
+        {
+            return 1;
+        }
+    } while (*org_str);
+    return 0;
+}
+
+// Checks if two strings are equal
+int str_match(char *org_str, char *searchString)
+{
+    // char *temp_ptr = searchString;
     // Keep going until '\0' is met.
-    while (*(++org_str))
-        ;
+    do
+    {
+        if (*org_str++ != *searchString++)
+        {
+            return 0;
+        }
+    } while (*searchString);
+    return 1;
 }
 
 /*Returns the index within this string of the first occurrence of searchValue, or -1 if not found.*/
@@ -114,11 +142,12 @@ void str_substring(char *org_str, int indexStart, int indexEnd, char *buffer)
 }
 
 // Trims whitespace from the beginning and end of the string.
-void str_trim(char* ws_str)
-{}
+void str_trim(char *ws_str)
+{
+}
 
 // Trims whitespace from the end of the string.
-void str_trimEnd(char* ws_str)
+void str_trimEnd(char *ws_str)
 {
 }
 
@@ -128,28 +157,28 @@ void str_trimStart(char *ws_str)
 }
 
 // Returns the calling string value converted to uppercase.
-void str_toUpperCase(char* str)
-{}
+void str_toUpperCase(char *str)
+{
+}
 
 // Returns the calling string value converted to lowercase.
 void str_toLowerCase(char *str)
-{}
+{
+}
 
+/*
+No idea how to handle locales:
 
+localeCompare()
+toLocaleLowerCase() <- wtf?
+toLocaleUpperCase() <- wtf?
+*/
 
-    /*
-    No idea how to handle locales:
-
-    localeCompare()
-    toLocaleLowerCase() <- wtf?
-    toLocaleUpperCase() <- wtf?
-    */
-
-    /* REGEX METHODS - maybe do them with just strings
-    match()
-    mastchAll()
-    replace()
-    replaceAll()
-    search()
-    split()
-    */
+/* REGEX METHODS - maybe do them with just strings
+match()
+mastchAll()
+replace()
+replaceAll()
+search()
+split()
+*/
