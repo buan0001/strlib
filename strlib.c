@@ -126,13 +126,46 @@ int str_indexOf(char *strToSearch, char *searchVal)
 }
 
 /* Returns the index within this string of the last occurrence of searchValue, or -1 if not found. */
-int str_lastIndexOf(char *searchStr, char *searchVal)
+int str_lastIndexOf(char *strToSearch, char *searchVal)
 {
+    int length_org_str = str_length(strToSearch);
+    int length_search = str_length(searchVal);
+    if (length_search == 0)
+    {
+        return -1;
+    }
+
+    int index = length_org_str - 1;
+    char *copy = strToSearch;
+    do
+    {
+        int matches = 0;
+        for (int i = 0; i < length_search; i++)
+        {
+            if (strToSearch[index + i] != searchVal[i])
+            {
+                break;
+            }
+            matches++;
+        }
+        if (matches == length_search)
+        {
+            return index;
+        }
+        else
+        {
+            index--;
+        }
+        // Continue as long as there is a value on the index
+        // AND as long as there's enough room to fit the search string in the original value
+    } while (strToSearch[index]);
+    return -1;
 }
 
 // Pads the current string from the end with a given string and returns a new string of the length targetLength.
 void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
 {
+    
 }
 // Pads the current string from the end with a given string and returns a new string of the length targetLength
 void str_padStart(char *org_str, char *pad_str, int final_len, char *buffer)
