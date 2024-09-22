@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "strlib.h"
+#include "strlib_test.h"
 
 int main()
 {
