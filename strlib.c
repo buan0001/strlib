@@ -19,6 +19,12 @@ void copy_arr(char *org_arr, char *buffer)
         ;
 }
 
+void copy_string_no_null(char *org_arr, char *buffer)
+{
+    while (*org_arr && (*buffer++ = *org_arr++))
+        ;
+}
+
 // Checks if two strings are equal
 int str_match(char *org_str, char *searchString)
 {
@@ -172,10 +178,15 @@ int str_lastIndexOf(char *strToSearch, char *searchVal)
 void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
 {
     int string_length = str_length(org_str);
+    char* buffer_start = buffer;
+    // printf("str length: %d\n", string_length);
     // Make a copy of the start adress for the pad str so we can use it multiple times
     char *pad_pointer_copy = pad_str;
 
-    copy_arr(org_str, buffer);
+    // printf("Buffer: %s\n", buffer);
+    copy_string_no_null(org_str, buffer);
+
+    // printf("Buffer: %p\n", buffer);
     // Start the pointer at the end of the pre-existing string
     buffer += string_length;
     while (string_length++ < final_len)
@@ -187,8 +198,11 @@ void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
         }
         *buffer++ = *pad_pointer_copy++;
     }
+    // buffer_start[string_length] = 0;
+    // printf("buffer at end: %p\n", buffer);
     // Add a terminating 0
-    *buffer = 0;
+    *(buffer) = 0;
+    // printf("buffer_start: %s\n", buffer_start);
 }
 
 // Pads the current string from the end with a given string and returns a new string of the length targetLength
@@ -203,23 +217,10 @@ void str_padStart(char *org_str, char *pad_str, int final_len, char *buffer)
     }
     else
     {
-        // printf("additional_spots_needed in pad START: %d\n", additional_spots_needed);
         // Make a copy of the start adress for the pad str so we can use it multiple times
         char *pad_pointer_copy = pad_str;
         // Dont fill the buffer from the start - we want to leave room for the padding in the begginning
         copy_arr(org_str, buffer + additional_spots_needed);
-
-        // for (int i = 0; i < additional_spots_needed; i++)
-        // {
-        //     // Reset the pointer of pad_str every time it reaches the end
-        //     if (!*pad_pointer_copy)
-        //     {
-        //         pad_pointer_copy = pad_str;
-        //     }
-        //     buffer[i] = *pad_pointer_copy++;
-        // }
-        // // Ensure the null terminator is correctly placed at the end of the final string
-        // buffer[final_len] = '\0';
 
         while (string_length++ < final_len)
         {
@@ -231,7 +232,7 @@ void str_padStart(char *org_str, char *pad_str, int final_len, char *buffer)
             *buffer++ = *pad_pointer_copy++;
         }
         // Add a terminating 0 at the end of the string full length
-        *(buffer + final_len) = 0;
+        // *(buffer + final_len) = 0;
     }
 }
 

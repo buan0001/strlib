@@ -22,18 +22,19 @@ void str_toLowerCase(char *str);
 
 // My own helpers:
 void copy_arr(char *org_arr, char *buffer);
+void copy_string_no_null(char *org_arr, char *buffer);
 int str_match(char *org_str, char *searchString);
 
 // Tests and other
 void run_tests();
 
-int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *, int));
-int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *));
-int run_length_like_test(char *string, int expected, int (*str_f)(char *));
-int run_pad_like_test(char *string, char *pad_str, int desired_length, char *expected, void (*str_f)(char *, char *, int, char *));
+int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *, int), char *func_name);
+int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *), char *func_name);
+int run_length_like_test(char *string, int expected, int (*str_f)(char *), char *func_name);
+int run_pad_like_test(char *string, char *pad_str, int desired_length, char *expected, void (*str_f)(char *, char *, int, char *), char *func_name);
 
-int handle_result_unconditional(int result, char *string, int expected);
-int handle_result_conditional(int result, char *string, int expected, char *criteria);
-int handle_string_comparison_test(char *original, char *actual, char *expected);
+int handle_result_unconditional(int result, int expected, char *func_name);
+int handle_result_conditional(int result, int expected, char *critera, char *func_name);
+int handle_string_comparison_test(char *actual, char *expected, char *func_name);
 
 #endif
