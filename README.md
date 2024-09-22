@@ -1,4 +1,4 @@
-# This is a simple terminal-based converter program written in C.
+# This is a homebrewed string library, sort of matching the string methods of the String object in JS - no regex methods for now, though
 
 **Important note: To run the program you need a C-compiler! The bash script relies on the gcc compiler being installed**
 
@@ -13,4 +13,4 @@
     1. `gcc -c *.c`
     2. `gcc -o runnable *.o`
     3. `./runnable`
-6. Now the program should be running, allowing you to convert between different numbers
+6. This will only run a bunch of tests for now - hopefully all passing - but if you're interested in using the library in other projects, simply copy the strlib.c and strlib.h and you're good to go
