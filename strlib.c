@@ -25,8 +25,8 @@ void copy_string_no_null(char *org_arr, char *buffer)
         ;
 }
 
-// Checks if two strings are equal
-int str_match(char *org_str, char *searchString)
+// Checks if the search string matches (part of) the org str
+int str_searchMatch(char *org_str, char *searchString)
 {
     // Keep going until '\0' is met.
     do
@@ -36,7 +36,31 @@ int str_match(char *org_str, char *searchString)
             return 0;
         }
     } while (*searchString);
+    // } while (*searchString && *org_str);
     return 1;
+}
+
+// ONLY returns true if the two strings are identical
+int str_match(char *org_str, char *searchString)
+{
+    do
+    {
+        if (*org_str++ != *searchString++)
+        {
+            return 0;
+        }
+    } while (*searchString && *org_str);
+    return 1;
+}
+
+int is_lowerCase_letter(char sussy_c)
+{
+    return 96 < sussy_c && sussy_c < 123;
+}
+
+int is_upperCase_letter(char sussy_c)
+{
+    return 64 < sussy_c && sussy_c < 91;
 }
 
 /* Returns the character (exactly one UTF-16 code unit) at the specified index. Accepts negative integers, which count back from the last string character.*/
@@ -75,13 +99,13 @@ int str_endsWith(char *charAdr, char *end_chars)
     // Move the string pointer to match the end string
     charAdr += length_dif;
 
-    return str_match(charAdr, end_chars);
+    return str_searchMatch(charAdr, end_chars);
 }
 
 // Determines whether the calling string begins with the characters of string searchString
 int str_startsWith(char *charAdr, char *start_str)
 {
-    return str_match(charAdr, start_str);
+    return str_searchMatch(charAdr, start_str);
 }
 
 /* Determines whether the calling string contains searchString. */
@@ -89,9 +113,11 @@ int str_includes(char *org_str, char *searchString)
 {
     // We need to check for every character in the org_str if it and the following charcters match the search string
     // If we find a match, we stop. Otherwise we increment the org_str and continue until 0 is met
+    char *org_copy = org_str;
+    char *search_copy = searchString;
     do
     {
-        if (str_match(org_str++, searchString))
+        if (str_searchMatch(org_str++, searchString))
         {
             return 1;
         }
@@ -178,7 +204,7 @@ int str_lastIndexOf(char *strToSearch, char *searchVal)
 void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
 {
     int string_length = str_length(org_str);
-    char* buffer_start = buffer;
+    char *buffer_start = buffer;
     // printf("str length: %d\n", string_length);
     // Make a copy of the start adress for the pad str so we can use it multiple times
     char *pad_pointer_copy = pad_str;
@@ -239,6 +265,16 @@ void str_padStart(char *org_str, char *pad_str, int final_len, char *buffer)
 // Returns a string consisting of the elements of the object repeated count times.
 void str_repeat(char *str_to_repeat, int repeat_amt, char *buffer)
 {
+    char *repeat_pointer_copy = str_to_repeat;
+    for (int i = 0; i < repeat_amt; i++)
+    {
+        if (!*repeat_pointer_copy)
+        {
+            repeat_pointer_copy = str_to_repeat;
+        }
+        *buffer++ = *repeat_pointer_copy++;
+    }
+    *buffer = 0;
 }
 
 // SUBTLE DIFFERENCES BETWEEN SUBSTRING AND SLICE
@@ -254,28 +290,62 @@ void str_substring(char *org_str, int indexStart, int indexEnd, char *buffer)
 }
 
 // Trims whitespace from the beginning and end of the string.
-void str_trim(char *ws_str)
+char *str_trim(char *ws_str)
 {
+    char *start_trimmed = str_trimStart(ws_str);
+    str_trimEnd(start_trimmed);
+    return start_trimmed;
 }
 
 // Trims whitespace from the end of the string.
 void str_trimEnd(char *ws_str)
 {
+    int length = str_length(ws_str);
+    // Start from the end of the string
+    ws_str += length - 1;
+    // Replacing any spaces with a terminating 0
+    while (*ws_str == ' ')
+    {
+        *ws_str-- = 0;
+    }
 }
 
 // Trims whitespace from the beginning of the string.
-void str_trimStart(char *ws_str)
+char *str_trimStart(char *ws_str)
 {
+    // Simply move the pointer one spot as long as it finds a space
+    while (*ws_str == ' ')
+    {
+        ws_str++;
+    }
+    // Return the pointer - we now ignore the previous white spaces
+    return ws_str;
 }
 
 // Returns the calling string value converted to uppercase.
 void str_toUpperCase(char *str)
 {
+    while (*str)
+    {
+        if (is_lowerCase_letter(*str))
+        {
+            *str -= 32;
+        }
+        str++;
+    }
 }
 
 // Returns the calling string value converted to lowercase.
 void str_toLowerCase(char *str)
 {
+    while (*str)
+    {
+        if (is_upperCase_letter(*str))
+        {
+            *str += 32;
+        }
+        str++;
+    }
 }
 
 /*

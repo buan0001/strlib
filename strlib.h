@@ -14,16 +14,19 @@ void str_padStart(char *org_str, char *pad_str, int final_len, char *buffer);
 void str_repeat(char *str_to_repeat, int repeat_amt, char *buffer);
 void str_slice(char *org_str, int indexStart, int indexEnd, char *buffer);
 void str_substring(char *org_str, int indexStart, int indexEnd, char *buffer);
-void str_trim(char *ws_str);
+char *str_trim(char *ws_str);
 void str_trimEnd(char *ws_str);
-void str_trimStart(char *ws_str);
+char *str_trimStart(char *ws_str);
 void str_toUpperCase(char *str);
 void str_toLowerCase(char *str);
 
 // My own helpers:
 void copy_arr(char *org_arr, char *buffer);
 void copy_string_no_null(char *org_arr, char *buffer);
+int str_searchMatch(char *org_str, char *searchString);
 int str_match(char *org_str, char *searchString);
+int is_upperCase_letter(char sussy_c);
+int is_lowerCase_letter(char sussy_c);
 
 // Tests and other
 void run_tests();
@@ -32,6 +35,9 @@ int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *
 int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *), char *func_name);
 int run_length_like_test(char *string, int expected, int (*str_f)(char *), char *func_name);
 int run_pad_like_test(char *string, char *pad_str, int desired_length, char *expected, void (*str_f)(char *, char *, int, char *), char *func_name);
+int run_trimEnd_like_test(char *string, char *expected, void (*str_f)(char *), char *func_name);
+int run_trimStart_like_test(char *string, char *expected, char *(*str_f)(char *), char *func_name);
+int run_repeat_like_test(char *str_to_repeat, int repeat_amt, char *expected, void (*str_f)(char *, int, char *), char *func_name);
 
 int handle_result_unconditional(int result, int expected, char *func_name);
 int handle_result_conditional(int result, int expected, char *critera, char *func_name);
