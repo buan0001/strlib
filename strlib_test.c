@@ -68,31 +68,32 @@ void run_tests()
     wrongs_corrects[run_repeat_like_test("k", 1, "k", str_repeat, "repeat")]++;
     wrongs_corrects[run_repeat_like_test("k h", 3, "k hk hk h", str_repeat, "repeat")]++;
     wrongs_corrects[run_repeat_like_test("k h", 0, "\0", str_repeat, "repeat")]++;
+    wrongs_corrects[run_repeat_like_test("k h", 0, "", str_repeat, "repeat")]++;
 
     char trim_array1[] = "nanu  ";
     char trim_array2[] = "     nanu  ";
+    char trim_array5[] = "     nanu  ";
     char trim_array3[] = "      ";
     char trim_array4[] = "   nanu";
 
     wrongs_corrects[run_trimEnd_like_test(trim_array1, "nanu", str_trimEnd, "trimEnd")]++;
     wrongs_corrects[run_trimEnd_like_test("nanu", "nanu", str_trimEnd, "trimEnd")]++;
     wrongs_corrects[run_trimEnd_like_test(trim_array2, "     nanu", str_trimEnd, "trimEnd")]++;
-    wrongs_corrects[run_trimEnd_like_test(trim_array3, "", str_trimEnd, "trimEnd")]++;
+    wrongs_corrects[run_trimEnd_like_test(trim_array3, "\0", str_trimEnd, "trimEnd")]++;
 
     wrongs_corrects[run_trimStart_like_test(trim_array4, "nanu", str_trimStart, "trimStart")]++;
     wrongs_corrects[run_trimStart_like_test("nanu", "nanu", str_trimStart, "trimStart")]++;
-    wrongs_corrects[run_trimStart_like_test(trim_array2, "nanu  ", str_trimStart, "trimStart")]++;
-    wrongs_corrects[run_trimStart_like_test(trim_array3, "", str_trimStart, "trimStart")]++;
+    wrongs_corrects[run_trimStart_like_test(trim_array5, "nanu  ", str_trimStart, "trimStart")]++;
+    wrongs_corrects[run_trimStart_like_test(trim_array3, "\0", str_trimStart, "trimStart")]++;
 
     wrongs_corrects[run_trimStart_like_test(trim_array1, "nanu", str_trim, "trim")]++;
     wrongs_corrects[run_trimStart_like_test(trim_array2, "nanu", str_trim, "trim")]++;
-    wrongs_corrects[run_trimStart_like_test(trim_array3, "", str_trim, "trim")]++;
+    wrongs_corrects[run_trimStart_like_test(trim_array3, "\0", str_trim, "trim")]++;
     wrongs_corrects[run_trimStart_like_test(trim_array4, "nanu", str_trim, "trim")]++;
 
     char case_array1[] = "nanu";
     char case_array2[] = " ._`| nanu  ";
     char case_array3[] = "nAnU";
-    // char case_array[] = "nanu";
     wrongs_corrects[run_trimEnd_like_test(case_array1, "NANU", str_toUpperCase, "toUpperCase")]++;
     wrongs_corrects[run_trimEnd_like_test(case_array2, " ._`| NANU  ", str_toUpperCase, "toUpperCase")]++;
     wrongs_corrects[run_trimEnd_like_test(case_array3, "NANU", str_toUpperCase, "toUpperCase")]++;
@@ -100,6 +101,28 @@ void run_tests()
     wrongs_corrects[run_trimEnd_like_test(case_array1, "nanu", str_toLowerCase, "toLowerCase")]++;
     wrongs_corrects[run_trimEnd_like_test(case_array2, " ._`| nanu  ", str_toLowerCase, "toLowerCase")]++;
     wrongs_corrects[run_trimEnd_like_test(case_array3, "nanu", str_toLowerCase, "toLowerCase")]++;
+
+    wrongs_corrects[ run_substring_like_test("nanubabu", 1, 3, "an", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanubabu", 0, 3, "nan", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", -1, 2, "n", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", 1, -1, "an", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", 0, 0, "", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", -3, -1, "an", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", -3, 1, "", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", 14, 0, "nanu", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", 0, 14, "nanu", str_substring, "substring") ]++;
+    wrongs_corrects[ run_substring_like_test("nanu", -14, 14, "", str_substring, "substring") ]++;
+
+    wrongs_corrects[ run_substring_like_test("nanubabu", 1, 3, "an", str_slice, "slice") ]++;
+    wrongs_corrects[run_substring_like_test("nanubabu", 0, 3, "nan", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", -1, 2, "", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", 1, -1, "an", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", 0, 0, "", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", -3, -1, "an", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", -3, 1, "", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", 14, 0, "", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", 0, 14, "nanu", str_slice, "slice")]++;
+    wrongs_corrects[run_substring_like_test("nanu", -14, 14, "", str_slice, "slice")]++;
 
     printf("\nRan %d tests:\n", (wrongs_corrects[0] + wrongs_corrects[1]));
     printf("Passed: %d\n", wrongs_corrects[1]);
@@ -146,8 +169,16 @@ int run_repeat_like_test(char *str_to_repeat, int repeat_amt, char *expected, vo
 {
     char repeated_array[500];
     (*str_f)(str_to_repeat, repeat_amt, repeated_array);
-    // printf("expected: %d. actual: %d\n", *expected, *repeated_array);
+
     return handle_string_comparison_test(repeated_array, expected, func_name);
+}
+
+int run_substring_like_test(char *org_str, int start_index, int end_index, char *expected, void (*str_f)(char *, int, int, char *), char *func_name)
+{
+    char substringed_array[500];
+    (*str_f)(org_str, start_index, end_index, substringed_array);
+
+    return handle_string_comparison_test(substringed_array, expected, func_name);
 }
 
 // Assert results
@@ -156,7 +187,7 @@ int handle_result_unconditional(int result, int expected, char *func_name)
 {
     if (result != expected)
     {
-        printf("Test FAILED for %s. Expected: '%d' Actual: '%d'. \n", func_name, expected, result);
+        printf("\nTest FAILED for %s. Expected: '%d' Actual: '%d'. \n\n", func_name, expected, result);
         return 0;
     }
     return 1;
@@ -166,7 +197,7 @@ int handle_result_conditional(int result, int expected, char *critera, char *fun
 {
     if (result != expected)
     {
-        printf("Test FAILED for %s. Testing for: %s. Expected: '%d' Actual: '%d' \n", func_name, critera, expected, result);
+        printf("\nTest FAILED for %s. Testing for: %s\nExpected: '%d'\nActual: '%d'\n\n", func_name, critera, expected, result);
         return 0;
     }
     return 1;
@@ -174,10 +205,10 @@ int handle_result_conditional(int result, int expected, char *critera, char *fun
 
 int handle_string_comparison_test(char *actual, char *expected, char *func_name)
 {
-    // printf("Expected: %s. Actual: %s. Match: %d\n", expected, actual, str_match(expected, actual));
+    // printf("Expected: %d. Actual: %d. Match: %d. Actual == match: %d Actual != match: %d\n", *expected, *actual, str_match(expected, actual), *expected == *actual, *expected != *actual);
     if (!str_match(expected, actual))
     {
-        printf("Test FAILED for %s.\nExpected: '%s'\nActual: '%s'\n", func_name, expected, actual);
+        printf("\nTest FAILED for %s.\nExpected: '%s'\nActual: '%s'\n\n", func_name, expected, actual);
         return 0;
     }
     return 1;

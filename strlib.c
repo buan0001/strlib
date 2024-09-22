@@ -19,12 +19,6 @@ void copy_arr(char *org_arr, char *buffer)
         ;
 }
 
-void copy_string_no_null(char *org_arr, char *buffer)
-{
-    while (*org_arr && (*buffer++ = *org_arr++))
-        ;
-}
-
 // Checks if the search string matches (part of) the org str
 int str_searchMatch(char *org_str, char *searchString)
 {
@@ -43,13 +37,14 @@ int str_searchMatch(char *org_str, char *searchString)
 // ONLY returns true if the two strings are identical
 int str_match(char *org_str, char *searchString)
 {
-    do
+    while (*searchString || *org_str)
     {
+        // printf("Iteration: %d\n", iteration);
         if (*org_str++ != *searchString++)
         {
             return 0;
         }
-    } while (*searchString && *org_str);
+    }
     return 1;
 }
 
@@ -205,14 +200,11 @@ void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
 {
     int string_length = str_length(org_str);
     char *buffer_start = buffer;
-    // printf("str length: %d\n", string_length);
     // Make a copy of the start adress for the pad str so we can use it multiple times
     char *pad_pointer_copy = pad_str;
 
-    // printf("Buffer: %s\n", buffer);
-    copy_string_no_null(org_str, buffer);
+    copy_arr(org_str, buffer);
 
-    // printf("Buffer: %p\n", buffer);
     // Start the pointer at the end of the pre-existing string
     buffer += string_length;
     while (string_length++ < final_len)
@@ -224,11 +216,9 @@ void str_padEnd(char *org_str, char *pad_str, int final_len, char *buffer)
         }
         *buffer++ = *pad_pointer_copy++;
     }
-    // buffer_start[string_length] = 0;
-    // printf("buffer at end: %p\n", buffer);
-    // Add a terminating 0
+    // Terminating 0
     *(buffer) = 0;
-    // printf("buffer_start: %s\n", buffer_start);
+    // printf("Buffer: %s\n", buffer - final_len);
 }
 
 // Pads the current string from the end with a given string and returns a new string of the length targetLength
@@ -268,25 +258,78 @@ void str_repeat(char *str_to_repeat, int repeat_amt, char *buffer)
     char *repeat_pointer_copy = str_to_repeat;
     for (int i = 0; i < repeat_amt; i++)
     {
-        if (!*repeat_pointer_copy)
+        while (*repeat_pointer_copy)
         {
-            repeat_pointer_copy = str_to_repeat;
+            *buffer++ = *repeat_pointer_copy++;
         }
-        *buffer++ = *repeat_pointer_copy++;
+        repeat_pointer_copy = str_to_repeat;
     }
-    *buffer = 0;
+    *buffer = '\0';
 }
 
 // SUBTLE DIFFERENCES BETWEEN SUBSTRING AND SLICE
 
-// Extracts a section of a string and returns a new string.
+// Extracts a section of a string and returns a new string
+// Same behaviour as substring, only it doesn't swap end and start if: end < start 
 void str_slice(char *org_str, int indexStart, int indexEnd, char *buffer)
 {
+    int length = str_length(org_str);
+
+    // If they are negative, we count from the end
+    if (indexEnd < 0)
+    {
+        indexEnd += length;
+    }
+    if (indexStart < 0)
+    {
+        indexStart += length;
+    }
+    if (indexEnd > indexStart)
+    {
+        for (int i = indexStart; i < indexEnd; i++)
+        {
+            // STOP if we're at an invalid index
+            if (i < 0 || i >= length)
+            {
+                break;
+            }
+            *buffer++ = *(org_str + i);
+        }
+    }
+    *buffer = 0;
 }
 
 // Returns a new string containing characters of the calling string from (or between) the specified index (or indices).
 void str_substring(char *org_str, int indexStart, int indexEnd, char *buffer)
 {
+    int length = str_length(org_str);
+
+    // If they are negative, we count from the end
+    if (indexEnd < 0)
+    {
+        indexEnd += length;
+    }
+    if (indexStart < 0)
+    {
+        indexStart += length;
+    }
+    // If we're supposed to start after the final index, we simply swap the two. You will get a return value!!
+    if (indexEnd < indexStart)
+    {
+        int temp = indexEnd;
+        indexEnd = indexStart;
+        indexStart = temp;
+    }
+    for (int i = indexStart; i < indexEnd; i++)
+    {
+        // STOP if we're at an invalid index
+        if (i < 0 || i >= length)
+        {
+            break;
+        }
+        *buffer++ = *(org_str + i);
+    }
+    *buffer = 0;
 }
 
 // Trims whitespace from the beginning and end of the string.

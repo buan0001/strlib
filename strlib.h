@@ -22,7 +22,7 @@ void str_toLowerCase(char *str);
 
 // My own helpers:
 void copy_arr(char *org_arr, char *buffer);
-void copy_string_no_null(char *org_arr, char *buffer);
+// void copy_string_no_null(char *org_arr, char *buffer);
 int str_searchMatch(char *org_str, char *searchString);
 int str_match(char *org_str, char *searchString);
 int is_upperCase_letter(char sussy_c);
@@ -38,6 +38,7 @@ int run_pad_like_test(char *string, char *pad_str, int desired_length, char *exp
 int run_trimEnd_like_test(char *string, char *expected, void (*str_f)(char *), char *func_name);
 int run_trimStart_like_test(char *string, char *expected, char *(*str_f)(char *), char *func_name);
 int run_repeat_like_test(char *str_to_repeat, int repeat_amt, char *expected, void (*str_f)(char *, int, char *), char *func_name);
+int run_substring_like_test(char *org_str, int start_index, int end_index, char *expected, void (*str_f)(char *, int, int, char *), char *func_name);
 
 int handle_result_unconditional(int result, int expected, char *func_name);
 int handle_result_conditional(int result, int expected, char *critera, char *func_name);
