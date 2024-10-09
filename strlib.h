@@ -25,6 +25,7 @@ char* str_fromCodePoint(int num_val);
 char* to_code_unit(int num, int initial_size);
 int length_and_bytes(char* str, int* byte_count);
 int bytes_in_code_point(unsigned char* point);
+int bytes_in_string(char* str);
 
 // My own helpers:
 void copy_arr(char* org_arr, char* buffer);

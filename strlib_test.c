@@ -59,6 +59,8 @@ void run_tests() {
 
     wrongs_corrects[run_endsWith_like_test("anu", "nanubabu", 1, str_indexOf,
         "indexOf")]++;
+    wrongs_corrects[run_endsWith_like_test("øå", "aøfdøåf", 4, str_indexOf,
+        "indexOf")]++;
     wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 0, str_indexOf,
         "indexOf")]++;
     wrongs_corrects[run_endsWith_like_test("n", "nanubabu", 0, str_indexOf,
@@ -73,6 +75,10 @@ void run_tests() {
         "indexOf")]++;
 
     wrongs_corrects[run_endsWith_like_test("anu", "nanubabu", 1, str_lastIndexOf,
+        "lastIndexOf")]++;
+    wrongs_corrects[run_endsWith_like_test("æøå", "æøåasdåk", 0, str_lastIndexOf,
+        "lastIndexOf")]++;
+    wrongs_corrects[run_endsWith_like_test("å", "æøåasdåk", 6, str_lastIndexOf,
         "lastIndexOf")]++;
     wrongs_corrects[run_endsWith_like_test("nanubabu", "nanubabu", 0,
         str_lastIndexOf, "lastIndexOf")]++;
