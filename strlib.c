@@ -411,18 +411,14 @@ void str_padStart(char* org_str, char* pad_str, int final_len, char* buffer) {
     int bytes_in_org = 0;
     int string_length = length_and_bytes(org_str, &bytes_in_org);
     int bytes_in_pad = bytes_in_string(pad_str);
-    int additional_spots_needed = (final_len - string_length) * bytes_in_pad;
 
-    if (additional_spots_needed < 0) {
+    // Pad nothing if the string already exceeds the desired length
+    if ((final_len - string_length) * bytes_in_pad < 0) {
         copy_arr(org_str, buffer);
     }
     else {
-        // Make a copy of the start adress for the pad str so we can use it multiple
-        // times
+        // Make a copy of the start adress for the pad str so we can use it multiple times
         char* pad_pointer_copy = pad_str;
-        // Dont fill the buffer from the start - we want to leave room for the
-        // padding in the begginning
-
         while (string_length++ < final_len) {
             // Reset the pointer of pad_str every time it reaches the end
             if (!*pad_pointer_copy) {
@@ -433,7 +429,6 @@ void str_padStart(char* org_str, char* pad_str, int final_len, char* buffer) {
                 *buffer++ = *pad_pointer_copy++;
                 byte_amount--;
             }
-            // *buffer++ = *pad_pointer_copy++;
         }
         // Can just copy last - buffer should be pointing to the end of the string anyway
         copy_arr(org_str, buffer);
@@ -442,12 +437,15 @@ void str_padStart(char* org_str, char* pad_str, int final_len, char* buffer) {
 
 // Returns a string consisting of the elements of the object repeated count
 // times.
- // TODO: UTF-8-ify
 void str_repeat(char* str_to_repeat, int repeat_amt, char* buffer) {
     char* repeat_pointer_copy = str_to_repeat;
     for (int i = 0; i < repeat_amt; i++) {
         while (*repeat_pointer_copy) {
-            *buffer++ = *repeat_pointer_copy++;
+            int byte_amount = bytes_in_code_point((unsigned char*)repeat_pointer_copy);
+            while (byte_amount > 0) {
+                *buffer++ = *repeat_pointer_copy++;
+                byte_amount--;
+            }
         }
         repeat_pointer_copy = str_to_repeat;
     }
@@ -471,12 +469,24 @@ void str_slice(char* org_str, int indexStart, int indexEnd, char* buffer) {
         indexStart += length;
     }
     if (indexEnd > indexStart) {
+        int temp_index = 0;
+        // Have to loop over every character until indexs tart is met, so we know the byte diff
+        while (temp_index < indexStart) {
+            org_str += bytes_in_code_point((unsigned char*)org_str);
+            temp_index++;
+        }
         for (int i = indexStart; i < indexEnd; i++) {
             // STOP if we're at an invalid index
             if (i < 0 || i >= length) {
                 break;
             }
-            *buffer++ = *(org_str + i);
+
+            int byte_amount = bytes_in_code_point((unsigned char*)org_str);
+            while (byte_amount > 0) {
+                *buffer++ = *org_str++;
+                byte_amount--;
+            }
+            // *buffer++ = *(org_str + i);
         }
     }
     *buffer = 0;
@@ -484,7 +494,6 @@ void str_slice(char* org_str, int indexStart, int indexEnd, char* buffer) {
 
 // Returns a new string containing characters of the calling string from (or
 // between) the specified index (or indices).
- // TODO: UTF-8-ify
 void str_substring(char* org_str, int indexStart, int indexEnd, char* buffer) {
     int length = str_length(org_str);
 
@@ -504,12 +513,21 @@ void str_substring(char* org_str, int indexStart, int indexEnd, char* buffer) {
         indexStart = temp;
     }
 
+    int temp_index = 0;
+    while (temp_index < indexStart) {
+        org_str += bytes_in_code_point((unsigned char*)org_str);
+        temp_index++;
+    }
     for (int i = indexStart; i < indexEnd; i++) {
         // STOP if we're at an invalid index
         if (i < 0 || i >= length) {
             break;
         }
-        *buffer++ = *(org_str + i);
+        int byte_amount = bytes_in_code_point((unsigned char*)org_str);
+        while (byte_amount > 0) {
+            *buffer++ = *org_str++;
+            byte_amount--;
+        }
     }
     *buffer = 0;
 }

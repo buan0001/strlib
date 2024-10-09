@@ -95,6 +95,10 @@ void run_tests() {
 
     wrongs_corrects[run_pad_like_test("nanubabu", "la", 12, "nanubabulala",
         str_padEnd, "padEnd")]++;
+    wrongs_corrects[run_pad_like_test("ka", "åæ", 6, "kaåæåæ",
+        str_padEnd, "padEnd")]++;
+    wrongs_corrects[run_pad_like_test("ka", "åæ", 5, "kaåæå",
+        str_padEnd, "padEnd")]++;
     wrongs_corrects[run_pad_like_test("nanubabu", "la", 11, "nanubabulal",
         str_padEnd, "padEnd")]++;
     wrongs_corrects[run_pad_like_test("nanubabu", ".", 11, "nanubabu...",
@@ -108,6 +112,10 @@ void run_tests() {
         str_padStart, "padStart")]++;
     wrongs_corrects[run_pad_like_test("nanubabu", "la", 11, "lalnanubabu",
         str_padStart, "padStart")]++;
+    wrongs_corrects[run_pad_like_test("nan", "æøå", 5, "æønan",
+        str_padStart, "padStart")]++;
+    wrongs_corrects[run_pad_like_test("bab", "æø", 8, "æøæøæbab",
+        str_padStart, "padStart")]++;
     wrongs_corrects[run_pad_like_test("nanubabu", ".", 11, "...nanubabu",
         str_padStart, "padStart")]++;
     wrongs_corrects[run_pad_like_test("nanubabu", " ", 11, "   nanubabu",
@@ -116,6 +124,12 @@ void run_tests() {
         str_padStart, "padStart")]++;
 
     wrongs_corrects[run_repeat_like_test("na", 4, "nananana", str_repeat,
+        "repeat")]++;
+    wrongs_corrects[run_repeat_like_test("å", 3, "ååå", str_repeat,
+        "repeat")]++;
+    wrongs_corrects[run_repeat_like_test("æøa", 3, "æøaæøaæøa", str_repeat,
+        "repeat")]++;
+    wrongs_corrects[run_repeat_like_test("å", 1, "å", str_repeat,
         "repeat")]++;
     wrongs_corrects[run_repeat_like_test("k", 1, "k", str_repeat, "repeat")]++;
     wrongs_corrects[run_repeat_like_test("k h", 3, "k hk hk h", str_repeat,
@@ -175,6 +189,10 @@ void run_tests() {
 
     wrongs_corrects[run_substring_like_test("nanubabu", 1, 3, "an", str_substring,
         "substring")]++;
+    wrongs_corrects[run_substring_like_test("aæøåb", 1, 3, "æø", str_substring,
+        "substring")]++;
+    wrongs_corrects[run_substring_like_test("aæøåb", 3, 4, "å", str_substring,
+        "substring")]++;
     wrongs_corrects[run_substring_like_test("nanubabu", 0, 3, "nan",
         str_substring, "substring")]++;
     wrongs_corrects[run_substring_like_test("nanu", -1, 2, "n", str_substring,
@@ -195,6 +213,10 @@ void run_tests() {
         "substring")]++;
 
     wrongs_corrects[run_substring_like_test("nanubabu", 1, 3, "an", str_slice,
+        "slice")]++;
+    wrongs_corrects[run_substring_like_test("ææøøåå", 1, 3, "æø", str_slice,
+        "slice")]++;
+    wrongs_corrects[run_substring_like_test("ææøøåå", 0, 3, "ææø", str_slice,
         "slice")]++;
     wrongs_corrects[run_substring_like_test("nanubabu", 0, 3, "nan", str_slice,
         "slice")]++;
