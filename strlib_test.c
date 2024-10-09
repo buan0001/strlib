@@ -14,6 +14,9 @@ void run_tests()
     wrongs_corrects[run_length_like_test("nan", 3, str_length, "str_length")]++;
     wrongs_corrects[run_length_like_test("", 0, str_length, "str_length")]++;
     wrongs_corrects[run_length_like_test("nanu babu", 9, str_length, "str_length")]++;
+    wrongs_corrects[run_length_like_test("åaø", 3, str_length, "str_length")]++;
+    wrongs_corrects[run_length_like_test("🍎", 1, str_length, "str_length")]++;
+    wrongs_corrects[run_length_like_test("🍎a🍎", 3, str_length, "str_length")]++;
 
     wrongs_corrects[run_at_like_test(0, "nanubabu", 'n', str_at, "str_at")]++;
     wrongs_corrects[run_at_like_test(4, "nanubabu", 'b', str_at, "str_at")]++;
