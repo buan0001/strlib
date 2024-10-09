@@ -3,7 +3,7 @@
 
 // String functions:
 int str_length(char* str);
-char str_at(char* charAdr, int index);
+char* str_at(char* charAdr, int index);
 int str_endsWith(char* charAdr, char* end_chars);
 int str_startsWith(char* charAdr, char* last_c);
 int str_includes(char* org_str, char* searchString);
@@ -23,6 +23,8 @@ void str_toLowerCase(char* str);
 int str_codePointAt(char* str, int index);
 char* str_fromCodePoint(int num_val);
 char* to_code_unit(int num, int initial_size);
+int length_and_bytes(char* str, int* byte_count);
+int bytes_in_code_point(unsigned char* point);
 
 // My own helpers:
 void copy_arr(char* org_arr, char* buffer);

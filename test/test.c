@@ -55,8 +55,8 @@ unsigned int decode_utf8(unsigned char *str, int *bytes) {
 }
 
 int main() {
-  char thing = 0b00000001;
-  printf("thing: %c\n", thing);
+  char final_mask = (0b11110 >> (0b100 - 2)) & 0b11110;
+  printf("thing: %x\n", final_mask);
   // Normal char isn't enough, since we need to look at all 8 bits in the byte,
   // not just 7
   // char *list = "ab";

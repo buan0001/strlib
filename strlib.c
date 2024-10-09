@@ -11,6 +11,7 @@ unsigned int decode_utf8(unsigned char* str, int* bytes) {
 
     // Normal ascii
     if (str[0] < 0x80) {  // 1-byte sequence
+        // printf("Issa 1 byte sequence\n");
         code_point = str[0];
         *bytes = 1;
     }
@@ -56,6 +57,28 @@ unsigned int decode_utf8(unsigned char* str, int* bytes) {
     return code_point;
 }
 
+int bytes_in_code_point(unsigned char* point) {
+    int bytes = 0;
+    if (point[0] < 0x80) {
+        bytes = 1;
+    }
+    else if ((point[0] & 0xE0) == 0xC0) {
+        bytes = 2;
+    }
+    else if ((point[0] & 0xF0) == 0xE0) {
+        bytes = 3;
+    }
+    else if ((point[0] & 0xF8) == 0xF0) {
+        bytes = 4;
+    }
+    else {
+        printf("Invalid UTF-8 sequence\n");
+        exit(1);
+    }
+
+    return bytes;
+}
+
 int str_codePointAt(char* str, int index) {
     int length = 0;
     int total_bytes = 0;
@@ -76,97 +99,77 @@ int str_codePointAt(char* str, int index) {
 
 char* str_fromCodePoint(int num_val) {
     char* str = NULL;
-
+    int amount_of_bytes = 0;
     if (num_val < 0) {
         return str;
     }
-    // 4 bytes = 32 bits + 1 for terminating 0
-    // char* str = malloc(sizeof(char) * 33);
     else if (num_val <= 0x7f) {
-        str = malloc(sizeof(char) + 1);
-        str[0] = num_val;
-        str[1] = 0;
+        amount_of_bytes = 1;
     }
     else if (num_val <= 0x7ff) {
-        // 2 bytes + terminating character
-        str = malloc(sizeof(char) * 3);
-        // Control characters of the first byte, left shifted to make room for the other bits
-        char temp = 0b10 << 6;
-        // We mask num_val to look at the first 6 bits. Then we "copy" them into temp
-        temp |= (num_val & 0x3f);
-        str[1] = temp;
-
-        // Shift num_val now, to look at the final bits
-        num_val >>= 6;
-        // Same procedure, but with one more bit for control
-        temp = 0b110 << 5;
-        temp |= (num_val & 0x1f);
-        str[0] = temp;
-        // Terminating null
-        str[2] = 0;
+        amount_of_bytes = 2;
     }
     else if (num_val <= 0xffff) {
-        str = malloc(sizeof(char) * 4);
-
+        amount_of_bytes = 3;
     }
     else if (num_val <= 0x10ffff) {
-
-
+        amount_of_bytes = 4;
     }
-    printf("Final string: %s\n", str);
+    str = to_code_unit(num_val, amount_of_bytes);
+    // printf("Final string: %s\n", str);
     return str;
 }
 
 char* to_code_unit(int num, int initial_size) {
+    // printf("Number: %d, bytes used: %d\n", num, initial_size);
     // Make room for all the bytes + 1 for terminating 0
-    char* string = malloc(sizeof(char) * initial_size + 1);
+    char* string = malloc(sizeof(char) * (initial_size + 1));
+    string[initial_size] = '\0';
     // No reason to loop if we're just dealing with ascii
     if (initial_size == 1) {
         string[0] = num;
     }
-
+    else if (initial_size > 4) {
+        printf("Invalid UTF-8\n");
+        free(string);
+        return NULL;
+    }
     else {
-        // The difference between the 3 first bytes is 8 then 16
-        // So for 2 byte value we dotn want to add anything
-        // 
-        char final_mask = 0b110 | (0b1000 |initial_size) ;
-        if (initial_size == 2) {
-            // Shift the 3 control bits, then mask the last 5
-            string[0] = (0b110 << 5) | (num & 0b11111);
-        }
-        else if (initial_size == 3) {
-            // Dec = 14
-            string[0] = (0b1110 << 4) | (num & 0b1111);
-        }
-        else if (initial_size == 4) {
-            // Dec = 30
-            string[0] = (0b11110 << 3) | (num & 0b111);
-        }
-        // Next would theoretically be 62
-        else {
-            printf("Invalid UTF-8\n");
-            free(string);
-            return NULL;
-        }
+        // -1 from initial size, since the last array spot is reserved for terminating 0
+        int size = initial_size - 1;
 
-        int current_size = initial_size - 1;
-        // 6 bits is the most we mask with at a time
-        int mask_bits = 0b00111111;
         // We stop 1 iteration "earlier", since that's our initial control byte
-        while (current_size > 1) {
-            // The final control byte
-            string[current_size] = (0b10 << 6) | (num & 0b111111);
-            num >>= 6;
+        while (size > 0) {
+            // "10" is the start of every trailing byte.
+            // So append the 10, shift them to the front of the byte,
+            // Mask the last 6 bits of the number and "add" them together
+            string[size] = (0b10 << 6) | (num & 0b111111);
 
-            current_size--;
+            // Finally right shift the number in preperation for the next byte
+            num >>= 6;
+            size--;
         }
+
+        // We dont shift for 4 byters, but the rest get right shifted and then set their first bit to 0 
+        char final_byte_start = (0b11110 >> (4 - initial_size)) & 0b11110;
+        // Set the "header" of the byte, shift it "7 - initial size" spots to the left,
+        // since the larger the header, the smaller the shift
+        // Finally we can mask the number according to how many bits are left over from the "header"
+        // No masking required in this case
+        string[0] = (final_byte_start << (0b111 - initial_size)) | num;
     }
 
-    string[initial_size] = '\0';
+    // printf("Final string: %s\n", string);
+    return string;
 }
 
 // Returns the length of the given string
 int str_length(char* str) {
+    int trash;
+    return length_and_bytes(str, &trash);
+}
+
+int length_and_bytes(char* str, int* byte_count) {
     int length = 0;
     int total_bytes = 0;
     while (str[total_bytes]) {
@@ -179,6 +182,7 @@ int str_length(char* str) {
         total_bytes += current_byte;
         length++;
     }
+    *byte_count = total_bytes;
     return length;
 }
 
@@ -188,20 +192,32 @@ void copy_arr(char* org_arr, char* buffer) { while (*buffer++ = *org_arr++); }
 
 // Checks if the search string matches (part of) the org str
 int str_searchMatch(char* org_str, char* searchString) {
+    if (org_str == NULL && searchString == NULL) {
+        return 1;
+    }
+    else if (org_str == NULL || searchString == NULL) {
+        return 0;
+    }
+
     // Keep going until '\0' is met.
     do {
         if (*org_str++ != *searchString++) {
             return 0;
         }
     } while (*searchString);
-    // } while (*searchString && *org_str);
     return 1;
 }
 
 // ONLY returns true if the two strings are identical
 int str_match(char* org_str, char* searchString) {
+    // printf("Org str: %s. Compare string: %s\n", org_str, searchString);
+    if (org_str == NULL && searchString == NULL) {
+        return 1;
+    }
+    else if (org_str == NULL || searchString == NULL) {
+        return 0;
+    }
     while (*searchString || *org_str) {
-        // printf("Iteration: %d\n", iteration);
         if (*org_str++ != *searchString++) {
             return 0;
         }
@@ -215,25 +231,47 @@ int is_upperCase_letter(char sussy_c) { return 64 < sussy_c && sussy_c < 91; }
 
 /* Returns the character (exactly one UTF-16 code unit) at the specified index.
  * Accepts negative integers, which count back from the last string character.*/
-char str_at(char* charAdr, int index) {
+char* str_at(char* charAdr, int index) {
+
+    int length = 0;
+    int total_bytes = 0;
+    // Make index not negative
+    // printf("Looking for value at %d in string: %s\n", index, charAdr);
     if (index < 0) {
-        index += str_length(charAdr);
+        int temp = str_length(charAdr);
+        // printf("Length: %d\n",temp);
+        index += temp;
     }
-    int moves = 0;
-    while (*charAdr != '\0' && index != moves) {
-        moves++;
-        charAdr++;
+    // printf("Looking for value at %d in string: %s\n", index, charAdr);
+    // printf("New while loop\n");
+    while (charAdr[total_bytes] && length < index) {
+        // printf("Totalt bytes: %d\n", total_bytes);
+        int current_byte = 0;
+        // We just ignore the return value since we only care about the byte length
+        decode_utf8((unsigned char*)&charAdr[total_bytes], &current_byte);
+        // unsigned int code_point = decode_utf8(&str[total_bytes], &bytes);
+        // printf("Code point: U+%04X, Bytes: %d\n", code_point, bytes);
+        total_bytes += current_byte;
+        length++;
+        // printf("Finished loop sucessfully\n");
     }
-    if (index == moves) {
-        return *charAdr;
+    // printf("Right after loop\n");
+    if (index > length || index < 0) {
+        printf("Index out of bounds\n");
+        return NULL;
     }
     else {
-        return 0;
+        // printf("decoding to code unit\n");
+        int byte_size = 0;
+        unsigned int num_version = decode_utf8((unsigned char*)&charAdr[total_bytes], &byte_size);
+        return to_code_unit(num_version, byte_size);
     }
 }
 
 /* Determines whether a string ends with the characters of the string
  * searchString. */
+
+ // TODO: UTF-8-ify
 int str_endsWith(char* charAdr, char* end_chars) {
     int length_org = str_length(charAdr);
     int length_check = str_length(end_chars);
@@ -258,8 +296,6 @@ int str_includes(char* org_str, char* searchString) {
     // We need to check for every character in the org_str if it and the following
     // charcters match the search string If we find a match, we stop. Otherwise we
     // increment the org_str and continue until 0 is met
-    char* org_copy = org_str;
-    char* search_copy = searchString;
     do {
         if (str_searchMatch(org_str++, searchString)) {
             return 1;
@@ -270,6 +306,8 @@ int str_includes(char* org_str, char* searchString) {
 
 /*Returns the index within this string of the first occurrence of searchValue,
  * or -1 if not found.*/
+
+ // TODO: UTF-8-ify
 int str_indexOf(char* strToSearch, char* searchVal) {
     int length_search = str_length(searchVal);
     if (length_search == 0) {
@@ -303,6 +341,7 @@ int str_indexOf(char* strToSearch, char* searchVal) {
 
 /* Returns the index within this string of the last occurrence of searchValue,
  * or -1 if not found. */
+ // TODO: UTF-8-ify
 int str_lastIndexOf(char* strToSearch, char* searchVal) {
     int length_org_str = str_length(strToSearch);
     int length_search = str_length(searchVal);
@@ -335,8 +374,10 @@ int str_lastIndexOf(char* strToSearch, char* searchVal) {
 
 // Pads the current string from the end with a given string and returns a new
 // string of the length targetLength.
+ // TODO: UTF-8-ify
 void str_padEnd(char* org_str, char* pad_str, int final_len, char* buffer) {
-    int string_length = str_length(org_str);
+    int byte_size = 0;
+    int actual_length = length_and_bytes(org_str, &byte_size);
     char* buffer_start = buffer;
     // Make a copy of the start adress for the pad str so we can use it multiple
     // times
@@ -345,13 +386,19 @@ void str_padEnd(char* org_str, char* pad_str, int final_len, char* buffer) {
     copy_arr(org_str, buffer);
 
     // Start the pointer at the end of the pre-existing string
-    buffer += string_length;
-    while (string_length++ < final_len) {
+    buffer += byte_size;
+    while (actual_length++ < final_len) {
         // Reset the pointer of pad_str every time it reaches the end
         if (!*pad_pointer_copy) {
             pad_pointer_copy = pad_str;
         }
-        *buffer++ = *pad_pointer_copy++;
+        int byte_amount = 0;
+        decode_utf8(*pad_pointer_copy, &byte_amount);
+        while (byte_amount > 1) {
+            *buffer++ = *pad_pointer_copy++;
+            byte_amount--;
+        }
+        // *buffer++ = *pad_pointer_copy++;
     }
     // Terminating 0
     *(buffer) = 0;
@@ -360,6 +407,7 @@ void str_padEnd(char* org_str, char* pad_str, int final_len, char* buffer) {
 
 // Pads the current string from the end with a given string and returns a new
 // string of the length targetLength
+ // TODO: UTF-8-ify
 void str_padStart(char* org_str, char* pad_str, int final_len, char* buffer) {
     int string_length = str_length(org_str);
     int additional_spots_needed = final_len - string_length;
@@ -389,6 +437,7 @@ void str_padStart(char* org_str, char* pad_str, int final_len, char* buffer) {
 
 // Returns a string consisting of the elements of the object repeated count
 // times.
+ // TODO: UTF-8-ify
 void str_repeat(char* str_to_repeat, int repeat_amt, char* buffer) {
     char* repeat_pointer_copy = str_to_repeat;
     for (int i = 0; i < repeat_amt; i++) {
@@ -405,6 +454,7 @@ void str_repeat(char* str_to_repeat, int repeat_amt, char* buffer) {
 // Extracts a section of a string and returns a new string
 // Same behaviour as substring, only it doesn't swap end and start if: end <
 // start
+ // TODO: UTF-8-ify
 void str_slice(char* org_str, int indexStart, int indexEnd, char* buffer) {
     int length = str_length(org_str);
 
@@ -429,6 +479,7 @@ void str_slice(char* org_str, int indexStart, int indexEnd, char* buffer) {
 
 // Returns a new string containing characters of the calling string from (or
 // between) the specified index (or indices).
+ // TODO: UTF-8-ify
 void str_substring(char* org_str, int indexStart, int indexEnd, char* buffer) {
     int length = str_length(org_str);
 
@@ -467,9 +518,9 @@ char* str_trim(char* ws_str) {
 
 // Trims whitespace from the end of the string.
 void str_trimEnd(char* ws_str) {
-    int length = str_length(ws_str);
+    int byte_length = bytes_in_code_point((unsigned char*)ws_str);
     // Start from the end of the string
-    ws_str += length - 1;
+    ws_str += byte_length - 1;
     // Replacing any spaces with a terminating 0
     while (*ws_str == ' ') {
         *ws_str-- = 0;

@@ -17,12 +17,12 @@ void run_tests() {
     wrongs_corrects[run_length_like_test("🍎", 1, str_length, "str_length")]++;
     wrongs_corrects[run_length_like_test("🍎a🍎", 3, str_length, "str_length")]++;
 
-    wrongs_corrects[run_at_like_test(0, "nanubabu", 'n', str_at, "str_at")]++;
-    wrongs_corrects[run_at_like_test(4, "nanubabu", 'b', str_at, "str_at")]++;
-    wrongs_corrects[run_at_like_test(20, "nanubabu", 0, str_at, "str_at")]++;
-    wrongs_corrects[run_at_like_test(-1, "nanubabu", 'u', str_at, "str_at")]++;
-    wrongs_corrects[run_at_like_test(-8, "nanubabu", 'n', str_at, "str_at")]++;
-    wrongs_corrects[run_at_like_test(-9, "nanubabu", 0, str_at, "str_at")]++;
+    wrongs_corrects[assert_strings(str_at("nanubabu", 0), "n", "str_at")]++;
+    wrongs_corrects[assert_strings(str_at("nanubabu", 4), "b", "str_at")]++;
+    wrongs_corrects[assert_strings(str_at("nanubabu", 20), NULL, "str_at")]++;
+    wrongs_corrects[assert_strings(str_at("nanubabu", -1), "u", "str_at")]++;
+    wrongs_corrects[assert_strings(str_at("nanubabu", -8), "n", "str_at")]++;
+    wrongs_corrects[assert_strings(str_at("nanubabu", -9), NULL, "str_at")]++;
 
     wrongs_corrects[run_endsWith_like_test("u", "nanubabu", 1, str_endsWith,
         "str_endsWith")]++;
@@ -30,6 +30,8 @@ void run_tests() {
         "str_endsWith")]++;
     wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_endsWith,
         "str_endsWith")]++;
+    wrongs_corrects[run_endsWith_like_test("aå", "nanuaå", 1, str_includes,
+        "includes")]++;
 
     wrongs_corrects[run_endsWith_like_test("na", "nanubabu", 1, str_startsWith,
         "startsWith")]++;
@@ -39,8 +41,12 @@ void run_tests() {
         "startsWith")]++;
     wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_startsWith,
         "startsWith")]++;
+    wrongs_corrects[run_endsWith_like_test("aå", "aånanua", 1, str_includes,
+        "includes")]++;
 
     wrongs_corrects[run_endsWith_like_test("ba", "nanubabu", 1, str_includes,
+        "includes")]++;
+    wrongs_corrects[run_endsWith_like_test("aå", "nanuaå", 1, str_includes,
         "includes")]++;
     wrongs_corrects[run_endsWith_like_test("q", "nanubabu", 0, str_includes,
         "includes")]++;
@@ -214,6 +220,8 @@ void run_tests() {
         , "e", "fromCodePoint")]++;
 
 
+
+
     printf("\nRan %d tests:\n",
         (wrongs_corrects[0] +
             wrongs_corrects[1]));
@@ -232,20 +240,16 @@ int assert_equals(int actual, int expected, char* func_name) {
     }
 }
 
-int assert_strings(char* actual, char* expected, char* func_name){
+int assert_strings(char* actual, char* expected, char* func_name) {
+    // printf("In assert strings\n");
     if (str_match(actual, expected))
         return 1;
     else {
-        printf("Error in %s. Expected: %s. Got: %s\n", func_name, expected, actual);
+        printf("Error in %s. Expected: %s (%x). Got: %s (%x)\n", func_name, expected, expected, actual, actual);
         return 0;
     }
 }
 
-int run_at_like_test(int index, char* string, int expected,
-    char (*str_f)(char*, int), char* func_name) {
-    return handle_result_unconditional((*str_f)(string, index), expected,
-        func_name);
-}
 
 int run_endsWith_like_test(char* comp_str, char* org_str, int expected,
     int (*str_f)(char*, char*), char* func_name) {
@@ -298,6 +302,7 @@ int run_substring_like_test(char* org_str, int start_index, int end_index,
 }
 
 // Assert results
+
 
 int handle_result_unconditional(int result, int expected, char* func_name) {
     if (result != expected) {

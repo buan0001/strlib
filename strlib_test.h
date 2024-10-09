@@ -3,7 +3,7 @@
 
 void run_tests();
 
-int run_at_like_test(int index, char *string, int expected, char (*str_f)(char *, int), char *func_name);
+
 int run_endsWith_like_test(char *ending_str, char *string, int expected, int (*str_f)(char *, char *), char *func_name);
 int run_length_like_test(char *string, int expected, int (*str_f)(char *), char *func_name);
 int run_pad_like_test(char *string, char *pad_str, int desired_length, char *expected, void (*str_f)(char *, char *, int, char *), char *func_name);
@@ -17,5 +17,6 @@ int handle_result_conditional(int result, int expected, char *critera, char *fun
 int handle_string_comparison_test(char *actual, char *expected, char *func_name);
 int assert_equals(int actual, int expected, char *func_name);
 int assert_strings(char* actual, char* expected, char* func_name);
+int assert_string_match(char* result, char* expected, char* func_name);
 
 #endif
