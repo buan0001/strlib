@@ -55,22 +55,24 @@ unsigned int decode_utf8(unsigned char *str, int *bytes) {
 }
 
 int main() {
+  char thing = 0b00000001;
+  printf("thing: %c\n", thing);
   // Normal char isn't enough, since we need to look at all 8 bits in the byte,
   // not just 7
-  char *list = "ab";
-  // unsigned char *list = "🍎aæ";
-  // char* list = "bær";
-  // char list[] = "aæøå";
-  // printf("printing for %s\n", list);
+  // char *list = "ab";
+  // // unsigned char *list = "🍎aæ";
+  // // char* list = "bær";
+  // // char list[] = "aæøå";
+  // // printf("printing for %s\n", list);
 
-  int index = 0;
-  while (list[index]) {
-    int bytes = 0;
-    unsigned int code_point = decode_utf8("a", &bytes);
-    // unsigned int code_point = decode_utf8((unsigned char*)&list[index], &bytes);
-    printf("Code point: U+%04X, Bytes: %d\n", code_point, bytes);
-    index += bytes;
-  }
+  // int index = 0;
+  // while (list[index]) {
+  //   int bytes = 0;
+  //   unsigned int code_point = decode_utf8("a", &bytes);
+  //   // unsigned int code_point = decode_utf8((unsigned char*)&list[index], &bytes);
+  //   printf("Code point: U+%04X, Bytes: %d\n", code_point, bytes);
+  //   index += bytes;
+  // }
 
   return 0;
 }
