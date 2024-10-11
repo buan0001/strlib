@@ -55,15 +55,15 @@ unsigned int decode_utf8(unsigned char *str, int *bytes) {
 }
 
 int main() {
-  char final_mask = (0b11110 >> (0b100 - 2)) & 0b11110;
-  printf("thing: %x\n", final_mask);
+  // char final_mask = (0b11110 >> (0b100 - 2)) & 0b11110;
+  // printf("thing: %x\n", final_mask);
   // Normal char isn't enough, since we need to look at all 8 bits in the byte,
   // not just 7
   // char *list = "ab";
-  // // unsigned char *list = "🍎aæ";
-  // // char* list = "bær";
+  unsigned char *list = "🍎aæ";
+  // char* list = "bær";
   // // char list[] = "aæøå";
-  // // printf("printing for %s\n", list);
+  printf("printing for %s\n", list);
 
   // int index = 0;
   // while (list[index]) {

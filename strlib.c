@@ -208,7 +208,7 @@ int length_and_bytes(char* str, int* byte_count) {
 
 // Copies the contents of one array into another. USE WITH CAUTION.
 // Has no guard against overflow
-void copy_arr(char* org_arr, char* buffer) { while (*buffer++ = *org_arr++); }
+void copy_arr(char* org_arr, char* buffer) { while ((*buffer++ = *org_arr++)); }
 
 // Checks if the search string matches (part of) the org str
 int str_searchMatch(char* org_str, char* searchString) {
@@ -380,7 +380,6 @@ int str_lastIndexOf(char* strToSearch, char* searchVal) {
 void str_padEnd(char* org_str, char* pad_str, int final_len, char* buffer) {
     int byte_size = 0;
     int actual_length = length_and_bytes(org_str, &byte_size);
-    char* buffer_start = buffer;
     // Make a copy of the start adress for the pad str so we can use it multiple
     // times
     char* pad_pointer_copy = pad_str;
@@ -541,7 +540,7 @@ char* str_trim(char* ws_str) {
 
 // Trims whitespace from the end of the string.
 void str_trimEnd(char* ws_str) {
-    int byte_length = bytes_in_string((unsigned char*)ws_str);
+    int byte_length = bytes_in_string(ws_str);
     // Start from the end of the string
     ws_str += byte_length - 1;
     // Replacing any spaces with a terminating 0

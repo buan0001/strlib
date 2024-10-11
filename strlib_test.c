@@ -273,7 +273,7 @@ int assert_strings(char* actual, char* expected, char* func_name) {
     if (str_match(actual, expected))
         return 1;
     else {
-        printf("Error in %s. Expected: %s (%x). Got: %s (%x)\n", func_name, expected, expected, actual, actual);
+        printf("Error in %s. Expected: %s. Got: %s\n", func_name, expected, actual);
         return 0;
     }
 }
@@ -292,7 +292,7 @@ int run_length_like_test(char* string, int expected, int (*str_f)(char*),
 
 int run_trimEnd_like_test(char* string, char* expected, void (*str_f)(char*),
     char* func_name) {
-    (*str_f)(string), expected, func_name;
+    (*str_f)(string);
     return handle_string_comparison_test(string, expected, func_name);
 }
 
