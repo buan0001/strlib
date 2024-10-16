@@ -26,13 +26,26 @@ $(TARGET): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean up build files - ONLY WORKS ON WINDOWS
+# Clean up build files - Requires WSL to run on windows
 clean:
-	@del /Q $(OBJS)
+ifeq ($(OS),Windows_NT)
+	wsl rm -f $(OBJS) $(TARGET)
+else
+	rm -f $(OBJS) $(TARGET)
+endif
+#C:\Windows\sysnative\wsl.exe rm *.o
+#powershell Remove-Item *.o
+
 
 # Custom target to clean up and execute
-run:all
+run:
+	make start
+	make clean
+
+start:all
 	./$(TARGET)
 
 # Phony targets
-.PHONY: all clean run
+.PHONY: all clean run start
+
+# @del /Q $(OBJS)
