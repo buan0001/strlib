@@ -8,15 +8,26 @@
 int main() { run_tests(); }
 
 void run_tests() {
-    // char* someString = malloc(sizeof("halløj"));
-    char* someString = "halløj";
-    String* strTest = str_construct(someString);
-    printf("Adress in test: %p\n", strTest);
-    printf("String: %s. Length: %d. Bytes: %d\n", strTest->str_start, strTest->length, strTest->byte_length);
-    str_destruct(strTest);
-    
-
     int wrongs_corrects[] = { 0, 0 };
+    // char* someString = malloc(sizeof("halløj"));
+    String* strTest1 = str_construct("🍎halløj");
+    String* strTest2 = str_construct("🍎halløj");
+    String* strTest3 = str_construct("ne😁j");
+
+    wrongs_corrects[assert_equals(str_codePointAt(*strTest1, 0), 127822, "string match")]++;
+    wrongs_corrects[assert_equals(str_codePointAt(*strTest1, 1), 104, "string match")]++;
+    wrongs_corrects[assert_equals(str_codePointAt(*strTest1, 10), -1, "string match")]++;
+
+    wrongs_corrects[assert_equals(str_match(*strTest1, *strTest2), 1, "string match")]++;
+    wrongs_corrects[assert_equals(str_match(*strTest1, *strTest3), 0, "string match")]++;
+
+
+    str_destruct(strTest1);
+    str_destruct(strTest2);
+    str_destruct(strTest3);
+    printf("Managed to free all\n");
+
+
 
     printf("\nRan %d tests:\n",
         (wrongs_corrects[0] +

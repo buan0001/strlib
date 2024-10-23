@@ -6,11 +6,13 @@ typedef struct String
     char* str_start;
     int byte_length;
     int length;
+    char* byte_LUT;
+    // char owns_string;
 } String;
 
 String* str_construct(char* str);
 void str_destruct(String* str_to_free);
-
+unsigned int decode_utf8(unsigned char* str);
 
 // String functions:
 int str_length(String str);
@@ -31,15 +33,15 @@ String* str_trimStart(String ws_str);
 String* str_toUpperCase(String str);
 String* str_toLowerCase(String str);
 
-int str_codePointAt(String str, int index);
+unsigned int str_codePointAt(String str, int index);
 String* str_fromCodePoint(int num_val);
-String* to_code_unit(int num, int initial_size);
+char* to_code_unit(int num, int initial_size);
 int length_and_bytes(String str, int* byte_count);
 int bytes_in_code_point(unsigned char* point);
 int bytes_in_string(String str);
 
 // My own helpers:
-String* copy_arr(String org_arr);
+void copy_arr(char* str, char* str2);
 int str_searchMatch(String org_str, String searchString);
 int str_match(String org_str, String searchString);
 int is_upperCase_letter(char sussy_c);
