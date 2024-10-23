@@ -29,11 +29,11 @@ $(TARGET): $(OBJS)
 # Clean up build files - Requires WSL to run on windows
 clean:
 ifeq ($(OS),Windows_NT)
-	wsl rm -f $(OBJS) $(TARGET)
+	C:\Windows\sysnative\wsl.exe rm *.o
 else
 	rm -f $(OBJS) $(TARGET)
 endif
-#C:\Windows\sysnative\wsl.exe rm *.o
+# wsl rm -f $(OBJS) $(TARGET)
 #powershell Remove-Item *.o
 
 
