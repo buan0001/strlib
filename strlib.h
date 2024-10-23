@@ -6,8 +6,8 @@ typedef struct String
     char* str_start;
     int byte_length;
     int length;
-    char* byte_LUT;
-    // char owns_string;
+    char* point_lengths;
+    char* byteIndexLookup;
 } String;
 
 String* str_construct(char* str);
@@ -16,7 +16,7 @@ unsigned int decode_utf8(unsigned char* str);
 
 // String functions:
 int str_length(String str);
-char str_at(String string, int index);
+unsigned int str_at(String string, int index);
 int str_endsWith(String string, String end_chars);
 int str_startsWith(String charAdr, String last_c);
 int str_includes(String org_str, String searchString);
